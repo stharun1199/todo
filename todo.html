@@ -6,7 +6,7 @@
     <title>To-Do List</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Ariel';
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
@@ -88,6 +88,21 @@
             align-items: center;
         }
 
+        li.completed {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        li .edit {
+            margin-right: 10px;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        li .edit:hover {
+            color: #0056b3;
+        }
+
         li .delete {
             color: #dc3545;
             cursor: pointer;
@@ -95,6 +110,16 @@
 
         li .delete:hover {
             color: #c82333;
+        }
+
+        li .complete-toggle {
+            margin-right: 10px;
+            cursor: pointer;
+            color: #28a745;
+        }
+
+        li .complete-toggle:hover {
+            color: #218838;
         }
 
         @media (max-width: 600px) {
@@ -130,9 +155,6 @@
         </form>
         <ul id="todo-list"></ul>
     </div>
-    <footer>
-        <p>&copy; To-Do List Website</p>
-    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -148,7 +170,26 @@
 
             function addTask(task) {
                 const li = document.createElement('li');
-                li.textContent = task;
+                
+                const taskSpan = document.createElement('span');
+                taskSpan.textContent = task;
+
+                const editBtn = document.createElement('span');
+                editBtn.textContent = '✎';
+                editBtn.classList.add('edit');
+                editBtn.addEventListener('click', () => {
+                    const newTask = prompt('Edit task', taskSpan.textContent);
+                    if (newTask) {
+                        taskSpan.textContent = newTask;
+                    }
+                });
+
+                const completeToggleBtn = document.createElement('span');
+                completeToggleBtn.textContent = '✔';
+                completeToggleBtn.classList.add('complete-toggle');
+                completeToggleBtn.addEventListener('click', () => {
+                    li.classList.toggle('completed');
+                });
 
                 const deleteBtn = document.createElement('span');
                 deleteBtn.textContent = '✖';
@@ -157,6 +198,9 @@
                     todoList.removeChild(li);
                 });
 
+                li.appendChild(completeToggleBtn);
+                li.appendChild(taskSpan);
+                li.appendChild(editBtn);
                 li.appendChild(deleteBtn);
                 todoList.appendChild(li);
             }
