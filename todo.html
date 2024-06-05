@@ -6,7 +6,7 @@
     <title>To-Do List</title>
     <style>
         body {
-            font-family: 'Ariel';
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
@@ -155,12 +155,14 @@
         </form>
         <ul id="todo-list"></ul>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('todo-form');
             const todoList = document.getElementById('todo-list');
             const newTaskInput = document.getElementById('new-task');
+
+            
+            loadTasks();
 
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -168,9 +170,13 @@
                 newTaskInput.value = '';
             });
 
-            function addTask(task) {
+            function addTask(task, completed = false) {
                 const li = document.createElement('li');
                 
+                if (completed) {
+                    li.classList.add('completed');
+                }
+
                 const taskSpan = document.createElement('span');
                 taskSpan.textContent = task;
 
@@ -181,6 +187,7 @@
                     const newTask = prompt('Edit task', taskSpan.textContent);
                     if (newTask) {
                         taskSpan.textContent = newTask;
+                        saveTasks();
                     }
                 });
 
@@ -189,6 +196,7 @@
                 completeToggleBtn.classList.add('complete-toggle');
                 completeToggleBtn.addEventListener('click', () => {
                     li.classList.toggle('completed');
+                    saveTasks();
                 });
 
                 const deleteBtn = document.createElement('span');
@@ -196,6 +204,7 @@
                 deleteBtn.classList.add('delete');
                 deleteBtn.addEventListener('click', () => {
                     todoList.removeChild(li);
+                    saveTasks();
                 });
 
                 li.appendChild(completeToggleBtn);
@@ -203,6 +212,24 @@
                 li.appendChild(editBtn);
                 li.appendChild(deleteBtn);
                 todoList.appendChild(li);
+
+                saveTasks();
+            }
+
+            function saveTasks() {
+                const tasks = [];
+                todoList.querySelectorAll('li').forEach(li => {
+                    tasks.push({
+                        task: li.querySelector('span').textContent,
+                        completed: li.classList.contains('completed')
+                    });
+                });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+
+            function loadTasks() {
+                const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+                tasks.forEach(taskObj => addTask(taskObj.task, taskObj.completed));
             }
         });
     </script>
